@@ -16,13 +16,15 @@ class SowAdmin(admin.ModelAdmin):
 		(None, {'fields': ['client']}),
 		('Date published', {'fields': ['pub_date']})
 	]
+	list_display = ['project','client','pub_date','author']
+	list_filter = ['author','pub_date','project']
 	inlines = [ContentInline]
 	actions = ['publish_pdf']
 	def publish_pdf(self,request,queryset):
 		for sow in queryset:
 			sectionset = sow.content_set.all()
 			makepdf.printpdf(sow,sectionset)
-	publish_pdf.short_description = "Publish this as a .pdf"
+	publish_pdf.short_description = "Publish as .pdf"
 	
 class CommonMedia:
   js = (
