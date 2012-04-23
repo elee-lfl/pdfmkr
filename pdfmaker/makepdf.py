@@ -136,7 +136,7 @@ def buildIndex(sow,story):
 	index.setStyle(TableStyle([('FACE',(0,0),(1,0),'Akkurat-Reg'),
 							('SIZE',(0,0),(1,0),10),
 							('TOPPADDING',(0,0),(1,0),20)]))
-	sectionset = sow.content_set.order_by('-order')
+	sectionset = sow.content_set.order_by('order')
 	story.append(index)
 	i = 1
 	for content in sectionset:

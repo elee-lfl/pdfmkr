@@ -24,7 +24,7 @@ class SowAdmin(SortableAdmin):
 	
 	def publish_pdf(self,request,queryset):
 		for sow in queryset:
-			sectionset = sow.content_set.order_by('-order')
+			sectionset = sow.content_set.order_by('order')
 			makepdf.printpdf(sow,sectionset)
 	publish_pdf.short_description = "Publish as .pdf"
 	
