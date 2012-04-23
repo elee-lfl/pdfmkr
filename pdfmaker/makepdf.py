@@ -136,16 +136,18 @@ def buildIndex(sow,story):
 	index.setStyle(TableStyle([('FACE',(0,0),(1,0),'Akkurat-Reg'),
 							('SIZE',(0,0),(1,0),10),
 							('TOPPADDING',(0,0),(1,0),20)]))
-	sectionset = sow.content_set.all()
+	sectionset = sow.content_set.order_by('-order')
 	story.append(index)
+	i = 1
 	for content in sectionset:
-		sectionid = addZero(content.sectionID)
+		sectionid = addZero(i)
 		sectiontitle = content.sectiontitle
 		section_print = tab('{}'.format(sectionid),'{}'.format(sectiontitle),22)	
 		section_print.setStyle(TableStyle([('FACE',(0,0),(1,0),'Akkurat-Light'),
 								('SIZE',(0,0),(1,0),10),
 								('TEXTCOLOR',(0,0),(0,0),numgrey)]))
 		story.append(section_print)
+		i = i + 1
 	
 def sectionHeaders(sectionid,sectiontitle):
 	sectionhead = tab(sectionid,sectiontitle.upper(),22)
@@ -160,13 +162,15 @@ def sectionHeaders(sectionid,sectiontitle):
 
 def sectionContent(Story,sectionset):
 	Story.append(FrameBreak())
+	i = 1
 	for content in sectionset:
-		sectionid = addZero(content.sectionID)
+		sectionid = addZero(i)
 		sectiontitle = content.sectiontitle
 		sectioncontent = content.sectioncontent
 		Story.append(sectionHeaders(sectionid,sectiontitle))
 		#Story.append(Paragraph("<para spaceAfter=40 spaceBefore=10><font face='Akkurat-Light' size=9>{}</font></para>".format(sectioncontent), styles['Normal']))
 		marginparse(sectioncontent,Story)
+		i = i + 1
 		
 	
 def prettyDateTime(datetime):

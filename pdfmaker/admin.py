@@ -1,15 +1,15 @@
+from adminsortable.admin import SortableAdmin, SortableTabularInline
 from pdfmaker.models import Sow, Content
 from django.contrib import admin
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import makepdf
 
-class ContentInline(admin.TabularInline):
+
+class ContentInline(SortableTabularInline):
 	model = Content
-	extra = 3
 
-
-class SowAdmin(admin.ModelAdmin):
+class SowAdmin(SortableAdmin):
 	fieldsets = [
 		(None, {'fields': ['author']}),
 		(None, {'fields': ['project']}),
@@ -20,9 +20,11 @@ class SowAdmin(admin.ModelAdmin):
 	list_filter = ['author','pub_date','project']
 	inlines = [ContentInline]
 	actions = ['publish_pdf']
+
+	
 	def publish_pdf(self,request,queryset):
 		for sow in queryset:
-			sectionset = sow.content_set.all()
+			sectionset = sow.content_set.order_by('-order')
 			makepdf.printpdf(sow,sectionset)
 	publish_pdf.short_description = "Publish as .pdf"
 	
