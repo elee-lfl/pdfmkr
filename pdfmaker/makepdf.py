@@ -39,10 +39,11 @@ sectionRight = 24
 sectionTop = 39
 sectionBottom = 36
 
-mainTextMargin = 189.643
+mainTextMargin = 190
 
 # frames
-frameMain = Frame(x1=mainTextMargin,y1=0,width=612-mainTextMargin,height=792,topPadding=39.4,bottomPadding=36,rightPadding=24)
+frameLaterPagesSide = Frame(x1=0,y1=0,width=mainTextMargin,height=792,topPadding=39.4,bottomPadding=36,rightPadding=0)
+frameLaterPagesMain = Frame(x1=mainTextMargin,y1=0,width=612-mainTextMargin,height=792,topPadding=39.4,bottomPadding=36,rightPadding=24)
 frameFirstPageSide = Frame(x1=0,y1=0,width=mainTextMargin,height=792,topPadding=0,leftPadding=0)
 frameFirstPageMain = Frame(x1=mainTextMargin,y1=0,width=612-mainTextMargin,height=792,topPadding=218,leftPadding=0)
 
@@ -81,20 +82,17 @@ def contactleftLaterPages(canvas):
 	
 def firstPage(canvas, doc):
 	canvas.saveState()
+	canvas.drawImage('http://some-antics.com/emma/appmedia/side.jpg',0,0,width=mainTextMargin-12,height=792)
 	lfleft(canvas)
 	contactleftFirstPage(canvas)
 	canvas.restoreState()
 
 def laterPages(canvas, doc):
 	canvas.saveState()
+	canvas.drawImage('http://some-antics.com/emma/appmedia/side.jpg',0,0,width=mainTextMargin-12,height=792)
 	contactleftLaterPages(canvas)
 	canvas.restoreState()
-	
-def leftLogo(canvas,doc):
-	canvas.saveState()
-	# insert left image
-	contactleftFirstPage(canvas)	
-	canvas.restoreState()
+
 	
 # hacked tabbing
 def tab(left,right,tabamt):
@@ -161,6 +159,7 @@ def sectionHeaders(sectionid,sectiontitle):
 	return sectionhead
 
 def sectionContent(Story,sectionset):
+	Story.append(FrameBreak())
 	for content in sectionset:
 		sectionid = addZero(content.sectionID)
 		sectiontitle = content.sectiontitle
@@ -215,7 +214,7 @@ def marginparse(html,story):
 def printpdf(sow,sectionset):
 	filename = "{}.pdf".format(sow.project)
 	pageOne = PageTemplate(id='FirstPage',frames=[frameFirstPageSide,frameFirstPageMain],onPage=firstPage)
-	mainPages = PageTemplate(id='Sections',frames=[frameMain],onPage=laterPages)
+	mainPages = PageTemplate(id='Sections',frames=[frameLaterPagesSide,frameLaterPagesMain],onPage=laterPages)
 	doc = BaseDocTemplate(filename.format(filename),pagesize=letter,pageTemplates=[pageOne,mainPages])
 	Story = []
 	c = canvas.Canvas(filename)
@@ -229,9 +228,14 @@ def printpdf(sow,sectionset):
 	#rest of pages
 	Story.append(NextPageTemplate('Sections'))
 	Story.append(PageBreak())
+		
+	#main text content
 	sectionContent(Story,sectionset)
 	
 	
 	doc.build(Story)
 
 	
+
+
+
