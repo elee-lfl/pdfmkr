@@ -1,9 +1,10 @@
 from adminsortable.admin import SortableAdmin, SortableTabularInline
-from pdfmaker.models import Sow, Content
+from pdfmaker.models import Sow, Content, UserProfile
 from django.contrib import admin
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import makepdf
+from django.contrib.auth.models import User
 
 
 class ContentInline(SortableTabularInline):
@@ -38,3 +39,13 @@ class CommonMedia:
   }	
 	
 admin.site.register(Sow, SowAdmin, Media=CommonMedia)
+
+class UserProfileInline(admin.TabularInline):
+	model = UserProfile
+
+class UserAdmin(admin.ModelAdmin):
+	list_display = ['username', 'first_name', 'last_name', 'email']
+	inlines = [UserProfileInline]
+
+admin.site.unregister(User)	
+admin.site.register(User, UserAdmin)
