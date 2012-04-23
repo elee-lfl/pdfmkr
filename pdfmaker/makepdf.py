@@ -15,7 +15,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 from reportlab.lib.colors import grey, CMYKColor, PCMYKColor
 from reportlab.lib.enums import TA_JUSTIFY, TA_RIGHT
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak, Frame, PageTemplate, BaseDocTemplate, NextPageTemplate, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak, Frame, FrameBreak, PageTemplate, BaseDocTemplate, NextPageTemplate, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.rl_config import defaultPageSize
 PAGE_HEIGHT=defaultPageSize[1]; PAGE_WIDTH=defaultPageSize[0]
@@ -43,8 +43,8 @@ mainTextMargin = 189.643
 
 # frames
 frameMain = Frame(x1=mainTextMargin,y1=0,width=612-mainTextMargin,height=792,topPadding=39.4,bottomPadding=36,rightPadding=24)
-frameFirstPageDetails = Frame(x1=0,y1=0,width=612,height=792,topPadding=218,leftPadding=mainTextMargin)
-
+frameFirstPageSide = Frame(x1=0,y1=0,width=mainTextMargin,height=792,topPadding=0,leftPadding=0)
+frameFirstPageMain = Frame(x1=mainTextMargin,y1=0,width=612-mainTextMargin,height=792,topPadding=218,leftPadding=0)
 
 def lfleft(canvas):
 	textobject = canvas.beginText()
@@ -90,14 +90,6 @@ def laterPages(canvas, doc):
 	contactleftLaterPages(canvas)
 	canvas.restoreState()
 	
-def ppdf(filename):
-	doc = SimpleDocTemplate("{}.pdf".format(filename),pagesize=letter,rightMargin=0,leftMargin=0,topMargin=0,bottomMargin=0)
-	Story = []
-	style = styles['Normal']
-	Story.append(PageBreak())
-	Story.append(Paragraph('text', styles['Normal']))
-	doc.build(Story, onFirstPage=firstPage, onLaterPages=laterPages)
-
 def leftLogo(canvas,doc):
 	canvas.saveState()
 	# insert left image
@@ -222,15 +214,18 @@ def marginparse(html,story):
 
 def printpdf(sow,sectionset):
 	filename = "{}.pdf".format(sow.project)
-	pageOne = PageTemplate(id='FirstPage',frames=[frameFirstPageDetails],onPage=firstPage)
+	pageOne = PageTemplate(id='FirstPage',frames=[frameFirstPageSide,frameFirstPageMain],onPage=firstPage)
 	mainPages = PageTemplate(id='Sections',frames=[frameMain],onPage=laterPages)
 	doc = BaseDocTemplate(filename.format(filename),pagesize=letter,pageTemplates=[pageOne,mainPages])
 	Story = []
 	c = canvas.Canvas(filename)
 	style = styles['Normal']
+	
 	#firstpage client details and index
+	Story.append(FrameBreak())
 	projectInfo(sow,Story)
 	buildIndex(sow,Story)	
+	
 	#rest of pages
 	Story.append(NextPageTemplate('Sections'))
 	Story.append(PageBreak())
@@ -240,6 +235,3 @@ def printpdf(sow,sectionset):
 	doc.build(Story)
 
 	
-
-
-
